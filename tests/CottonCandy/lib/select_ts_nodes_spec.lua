@@ -18,7 +18,6 @@ end
         local nodes = lib_ts_nodes.get_nodes_from_query(query)
 
         module.select_node(nodes[3])
-
         vim.cmd("norm! ") -- go to Select Mode (from Visual Mode)
         vim.cmd("norm! omg") -- type in `omg`
 
@@ -29,6 +28,36 @@ local my_func = function()
 end
         ]]
         local got = test_helpers.get_all_lines(true)
+        assert.equals(want, got)
+
+        -- edit 1st node
+        vim.cmd("norm! ")
+        module.select_node(nodes[1])
+        vim.cmd("norm! ")
+        vim.cmd("norm! edited_function_name")
+
+        want = [[
+local edited_function_name = function()
+    local my_num = 100
+    local omg = "This is a string"
+end
+        ]]
+        got = test_helpers.get_all_lines(true)
+        assert.equals(want, got)
+
+        -- edit 2nd node
+        vim.cmd("norm! ")
+        module.select_node(nodes[2])
+        vim.cmd("norm! ")
+        vim.cmd("norm! paint_the_town")
+
+        want = [[
+local edited_function_name = function()
+    local paint_the_town = 100
+    local omg = "This is a string"
+end
+        ]]
+        got = test_helpers.get_all_lines(true)
         assert.equals(want, got)
     end)
 end)
