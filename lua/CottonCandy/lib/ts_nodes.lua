@@ -1,27 +1,28 @@
 local M = {}
 
-local get_lang_and_root = function()
-    local filetype_to_parsername = {
-        javascriptreact = "javascript",
-        ecma = "javascript",
-        jsx = "javascript",
-        PKGBUILD = "bash",
-        html_tags = "html",
-        ["typescript.tsx"] = "tsx",
-        ["html.handlebars"] = "glimmer",
-        systemverilog = "verilog",
-        cls = "latex",
-        sty = "latex",
-        OpenFOAM = "foam",
-        pandoc = "markdown",
-        rmd = "markdown",
-        quarto = "markdown",
-        cs = "c_sharp",
-        tape = "vhs",
-        dosini = "ini",
-        confini = "ini",
-    }
+-- https://github.com/nvim-treesitter/nvim-treesitter/blob/master/lua/nvim-treesitter/parsers.lua
+local filetype_to_parsername = {
+    javascriptreact = "javascript",
+    ecma = "javascript",
+    jsx = "javascript",
+    PKGBUILD = "bash",
+    html_tags = "html",
+    ["typescript.tsx"] = "tsx",
+    ["html.handlebars"] = "glimmer",
+    systemverilog = "verilog",
+    cls = "latex",
+    sty = "latex",
+    OpenFOAM = "foam",
+    pandoc = "markdown",
+    rmd = "markdown",
+    quarto = "markdown",
+    cs = "c_sharp",
+    tape = "vhs",
+    dosini = "ini",
+    confini = "ini",
+}
 
+local get_parser_name_and_root = function()
     local lang = vim.bo[0].ft
     local parser_name = filetype_to_parsername[lang] or lang
 
@@ -36,10 +37,10 @@ local get_lang_and_root = function()
 end
 
 M.get_nodes_from_query = function(query)
-    local lang, root = get_lang_and_root()
+    local parser_name, root = get_parser_name_and_root()
     local nodes = {}
 
-    local iter_query = vim.treesitter.query.parse_query(lang, query)
+    local iter_query = vim.treesitter.query.parse_query(parser_name, query)
     for _, matches, _ in iter_query:iter_matches(root) do
         local node = matches[1]
         table.insert(nodes, node)
