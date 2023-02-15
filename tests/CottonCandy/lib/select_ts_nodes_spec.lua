@@ -1,63 +1,43 @@
 local test_helpers = require("CottonCandy.test_helpers")
-local lib_ts_nodes = require("CottonCandy.lib.ts_nodes")
 local module = require("CottonCandy.lib.select_ts_nodes")
 
-describe("select ts_node", function()
-    before_each(function()
-        test_helpers.set_lines([[
-local my_func = function()
-    local my_num = 100
-    local my_str = "This is a string"
-end
-        ]])
+describe("select prev / next ts_node in query", function()
+    it("works when nodes in the same line", function()
+        -- variables
+        local query = "((identifier) @cap)"
+
+        -- setup
+        test_helpers.set_lines("my_func(arg1, arg2, arg3, arg4, arg5)")
         vim.bo.ft = "lua"
-    end)
 
-    it("works", function()
-        local query = " ((identifier) @cap)"
-        local nodes = lib_ts_nodes.get_nodes_from_query(query)
+        -- go to `arg2`
+        vim.cmd("norm! f2")
 
-        module.select_node(nodes[3])
-        vim.cmd("norm! ") -- go to Select Mode (from Visual Mode)
-        vim.cmd("norm! omg") -- type in `omg`
+        -- want to select `arg3` and replace with `modded_arg3`
+        module.select_previous_or_next_node_with_query(query, "next")
+        vim.cmd("norm! modded_arg3")
 
-        local want = [[
-local my_func = function()
-    local my_num = 100
-    local omg = "This is a string"
-end
-        ]]
-        local got = test_helpers.get_all_lines(true)
-        assert.equals(want, got)
+        assert.equals(
+            "my_func(arg1, arg2, modded_arg3, arg4, arg5)",
+            test_helpers.get_all_lines(true)
+        )
 
-        -- edit 1st node
-        vim.cmd("norm! ")
-        module.select_node(nodes[1])
-        vim.cmd("norm! ")
-        vim.cmd("norm! edited_function_name")
+        -- want to select `arg4` and replace with `modded_arg4`
+        module.select_previous_or_next_node_with_query(query, "next")
+        vim.cmd("norm! modded_arg4")
 
-        want = [[
-local edited_function_name = function()
-    local my_num = 100
-    local omg = "This is a string"
-end
-        ]]
-        got = test_helpers.get_all_lines(true)
-        assert.equals(want, got)
+        assert.equals(
+            "my_func(arg1, arg2, modded_arg3, modded_arg4, arg5)",
+            test_helpers.get_all_lines(true)
+        )
 
-        -- edit 2nd node
-        vim.cmd("norm! ")
-        module.select_node(nodes[2])
-        vim.cmd("norm! ")
-        vim.cmd("norm! paint_the_town")
+        -- want to select `modded_arg3` and replace with `further_modded_arg3`
+        module.select_previous_or_next_node_with_query(query, "previous")
+        vim.cmd("norm! further_modded_arg3")
 
-        want = [[
-local edited_function_name = function()
-    local paint_the_town = 100
-    local omg = "This is a string"
-end
-        ]]
-        got = test_helpers.get_all_lines(true)
-        assert.equals(want, got)
+        assert.equals(
+            "my_func(arg1, arg2, further_modded_arg3, modded_arg4, arg5)",
+            test_helpers.get_all_lines(true)
+        )
     end)
 end)
