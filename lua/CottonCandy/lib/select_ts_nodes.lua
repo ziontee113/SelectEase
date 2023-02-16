@@ -16,34 +16,45 @@ M.select_previous_or_next_node_with_query = function(query, direction)
     if direction == "next" then
         for _, node in ipairs(nodes) do
             local start_row, start_col, _, _ = node:range()
-            if cursor_row <= start_row then
-                if cursor_row == start_row and cursor_col < start_col then
-                    select_node(node)
-                    break
-                end
+            if cursor_row == start_row and cursor_col < start_col then
+                select_node(node)
+                break
+            end
+            if cursor_row < start_row then
+                select_node(node)
+                break
             end
         end
     elseif direction == "previous" then
         for i = #nodes, 1, -1 do
             local node = nodes[i]
-            local _, _, end_row, end_col = node:range()
-            if cursor_row >= end_row then
-                if cursor_row == end_row and cursor_col > end_col then
-                    select_node(node)
-                    break
-                end
+            local start_row, start_col, _, _ = node:range()
+            if cursor_row == start_row and cursor_col > start_col then
+                select_node(node)
+                break
+            end
+            if cursor_row > start_row then
+                select_node(node)
+                break
             end
         end
     end
 end
 
-local query = "((identifier) @cap)"
+local identifier_query = "((identifier) @cap)"
+local string_content = '("string_content" @cap)'
 
+vim.keymap.set({ "n", "s", "i" }, "<C-A-k>", function()
+    M.select_previous_or_next_node_with_query(identifier_query, "previous")
+end, {})
+vim.keymap.set({ "n", "s", "i" }, "<C-A-j>", function()
+    M.select_previous_or_next_node_with_query(identifier_query, "next")
+end, {})
 vim.keymap.set({ "n", "s", "i" }, "<C-A-h>", function()
-    M.select_previous_or_next_node_with_query(query, "previous")
+    M.select_previous_or_next_node_with_query(string_content, "previous")
 end, {})
 vim.keymap.set({ "n", "s", "i" }, "<C-A-l>", function()
-    M.select_previous_or_next_node_with_query(query, "next")
+    M.select_previous_or_next_node_with_query(string_content, "next")
 end, {})
 
 return M
