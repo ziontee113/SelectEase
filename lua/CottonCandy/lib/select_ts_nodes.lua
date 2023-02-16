@@ -100,33 +100,19 @@ local find_nodes_that_covers_cursor = function(nodes, cursor_row, cursor_col)
     return nodes_that_covers_cursor, cutoff_index
 end
 
-local function find_most_overlap(input, nodes)
-    local max_overlap = 0
-    local max_overlap_index = nil
+local function find_left_most_node(nodes)
+    local left_most = math.huge
+    local left_most_node = nodes[1]
 
-    for i, node in ipairs(nodes) do
-        local _, start_col, _, end_col = node:range()
-        local range = { start_col, end_col }
-
-        local overlap = 0
-        local range_start = range[1]
-        local range_end = range[2]
-
-        -- Count how many positions in the input range are contained within the current range
-        for pos = input[1], input[2] do
-            if pos >= range_start and pos <= range_end then
-                overlap = overlap + 1
-            end
-        end
-
-        -- Update max_overlap and max_overlap_index if this range has more overlap
-        if overlap > max_overlap then
-            max_overlap = overlap
-            max_overlap_index = i
+    for _, node in ipairs(nodes) do
+        local _, start_col, _, _ = node:range()
+        if start_col < left_most then
+            left_most = start_col
+            left_most_node = node
         end
     end
 
-    return nodes[max_overlap_index]
+    return left_most_node
 end
 
 local vertical_drill_jump = function(opts, nodes, cursor_row, cursor_col)
@@ -191,8 +177,8 @@ local vertical_drill_jump = function(opts, nodes, cursor_row, cursor_col)
         end
 
         if #candidates > 0 then
-            local most_overlap_node = find_most_overlap({ sn_start_col, sn_end_col }, candidates)
-            select_node(most_overlap_node)
+            local left_most_node = find_left_most_node(candidates)
+            select_node(left_most_node)
         end
     end
 end
