@@ -3,6 +3,8 @@ local lib_select_mode = require("CottonCandy.lib.select_mode")
 
 local M = {}
 
+-- TODO: evolve to jump to the same node type at cursor
+
 local select_node = function(node)
     local start_row, start_col, end_row, end_col = node:range()
     lib_select_mode.any_select({ start_row, start_col }, { end_row, end_col })
@@ -53,30 +55,20 @@ local sequential_jump = function(opts, nodes, cursor_row, cursor_col)
     end
 end
 
---- content by ChatGPT
-local find_smallest_node = function(nodes)
-    -- Initialize smallest_row and smallest_col to large numbers
+local find_smallest_range_node = function(nodes)
     local smallest_row = math.huge
     local smallest_col = math.huge
-
-    -- Initialize smallest_node to nil
     local smallest_node = nil
 
-    -- Loop through each node in the table
     for _, node in ipairs(nodes) do
         local start_row, start_col, end_row, end_col = node:range()
-
-        -- Compute the number of rows and columns
         local num_rows = end_row - start_row + 1
         local num_cols = end_col - start_col + 1
 
-        -- Update smallest_row and smallest_node if this node has fewer rows
         if num_rows < smallest_row then
             smallest_row = num_rows
             smallest_col = num_cols
             smallest_node = node
-
-        -- If this node has the same number of rows as the current smallest_node, compare columns
         elseif num_rows == smallest_row and num_cols < smallest_col then
             smallest_col = num_cols
             smallest_node = node
@@ -100,7 +92,7 @@ local find_nodes_that_covers_cursor = function(nodes, cursor_row, cursor_col)
     return nodes_that_covers_cursor, cutoff_index
 end
 
-local function find_left_most_node(nodes)
+local find_left_most_node = function(nodes)
     local left_most = math.huge
     local left_most_node = nodes[1]
 
@@ -115,64 +107,39 @@ local function find_left_most_node(nodes)
     return left_most_node
 end
 
+local function node_is_possible_candidate(start_col, end_col, sn_start_col, sn_end_col)
+    return start_col >= sn_start_col and start_col <= sn_end_col
+        or end_col >= sn_start_col and end_col <= sn_end_col
+        or start_col <= sn_start_col and end_col >= sn_end_col
+end
+
 local vertical_drill_jump = function(opts, nodes, cursor_row, cursor_col)
-    local nodes_that_covers_cursor, cutoff_index =
+    local nodes_that_cover_cursor, cutoff_index =
         find_nodes_that_covers_cursor(nodes, cursor_row, cursor_col)
-    local smallest_node = find_smallest_node(nodes_that_covers_cursor)
+    local smallest_node = find_smallest_range_node(nodes_that_cover_cursor)
 
     if smallest_node then
         local _, sn_start_col, _, sn_end_col = smallest_node:range()
 
         local candidates = {}
-        local last_candidate_row = 0
 
-        if opts.direction == "next" then
-            for i = cutoff_index, #nodes do
-                local node = nodes[i]
-                local start_row, start_col, _, end_col = node:range()
+        local loop_start = cutoff_index
+        local loop_end = opts.direction == "next" and #nodes or 1
+        local loop_step = opts.direction == "previous" and -1 or 1
 
-                if start_row > cursor_row then
-                    if
-                        start_col >= sn_start_col and start_col <= sn_end_col
-                        or end_col >= sn_start_col and end_col <= sn_end_col
-                        or start_col <= sn_start_col and end_col >= sn_end_col
-                    then
-                        if #candidates == 0 then
-                            table.insert(candidates, node)
-                            last_candidate_row = start_row
-                        else
-                            if start_row == last_candidate_row then
-                                table.insert(candidates, node)
-                            else
-                                break
-                            end
-                        end
-                    end
-                end
-            end
-        end
+        for i = loop_start, loop_end, loop_step do
+            local node = nodes[i]
+            local start_row, start_col, _, end_col = node:range()
 
-        if opts.direction == "previous" then
-            for i = cutoff_index, 1, -1 do
-                local node = nodes[i]
-                local start_row, start_col, _, end_col = node:range()
-
-                if start_row < cursor_row then
-                    if
-                        start_col >= sn_start_col and start_col <= sn_end_col
-                        or end_col >= sn_start_col and end_col <= sn_end_col
-                        or start_col <= sn_start_col and end_col >= sn_end_col
-                    then
-                        if #candidates == 0 then
-                            table.insert(candidates, node)
-                            last_candidate_row = start_row
-                        else
-                            if start_row == last_candidate_row then
-                                table.insert(candidates, node)
-                            else
-                                break
-                            end
-                        end
+            if
+                (start_row > cursor_row and opts.direction == "next")
+                or (start_row < cursor_row and opts.direction == "previous")
+            then
+                if node_is_possible_candidate(start_col, end_col, sn_start_col, sn_end_col) then
+                    if #candidates == 0 or candidates[1]:range() == start_row then
+                        table.insert(candidates, node)
+                    else
+                        break
                     end
                 end
             end
