@@ -2,6 +2,8 @@
 
 Select text using Treesitter Queries and start typing right away.
 
+https://user-images.githubusercontent.com/102876811/219462863-d004636c-f7b6-4556-8cc6-45845b3aa668.mp4
+
 ## Installation:
 
 Example `lazy.nvim` config:
