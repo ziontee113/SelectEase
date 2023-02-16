@@ -1,4 +1,4 @@
-local lib_ts_nodes = require("CottonCandy.lib.ts_nodes")
+local lib_get_ts_nodes = require("CottonCandy.lib.get_ts_nodes")
 local lib_select_mode = require("CottonCandy.lib.select_mode")
 
 local M = {}
@@ -9,7 +9,7 @@ local select_node = function(node)
 end
 
 M.select_node = function(opts)
-    local nodes = lib_ts_nodes.get_nodes_from_query(opts.query)
+    local nodes = lib_get_ts_nodes.get_nodes_from_query(opts.query)
     local cursor = vim.api.nvim_win_get_cursor(0)
     local cursor_row, cursor_col = cursor[1] - 1, cursor[2]
 
@@ -40,22 +40,6 @@ M.select_node = function(opts)
         end
     end
 end
-
-local identifier_query = "((identifier) @cap)"
-local string_content_query = '("string_content" @cap)'
-
-vim.keymap.set({ "n", "s", "i" }, "<C-A-k>", function()
-    M.select_node({ query = identifier_query, direction = "previous" })
-end, {})
-vim.keymap.set({ "n", "s", "i" }, "<C-A-j>", function()
-    M.select_node({ query = identifier_query, direction = "next" })
-end, {})
-vim.keymap.set({ "n", "s", "i" }, "<C-A-h>", function()
-    M.select_node({ query = string_content_query, direction = "previous" })
-end, {})
-vim.keymap.set({ "n", "s", "i" }, "<C-A-l>", function()
-    M.select_node({ query = string_content_query, direction = "next" })
-end, {})
 
 return M
 
