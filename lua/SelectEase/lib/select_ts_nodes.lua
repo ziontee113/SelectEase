@@ -1,5 +1,5 @@
-local lib_get_ts_nodes = require("CottonCandy.lib.get_ts_nodes")
-local lib_select_mode = require("CottonCandy.lib.select_mode")
+local lib_get_ts_nodes = require("SelectEase.lib.get_ts_nodes")
+local lib_select_mode = require("SelectEase.lib.select_mode")
 
 local M = {}
 
