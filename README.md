@@ -4,6 +4,12 @@ Select text using Treesitter Queries and start typing right away.
 
 https://user-images.githubusercontent.com/102876811/219462863-d004636c-f7b6-4556-8cc6-45845b3aa668.mp4
 
+## Word of Caution:
+
+Please be aware that this plugin is still in an experimental stage and may exhibit unexpected behavior.
+Your feedback and suggestions are welcome and please feel free to create issues or pull requests on the project's GitHub repository.
+I appreciate your willingness to try it out the plugin and share your thoughts.
+
 ## Installation:
 
 Example `lazy.nvim` config:
