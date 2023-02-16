@@ -1,11 +1,11 @@
-local ts_utils = require("nvim-treesitter.ts_utils")
 local lib_ts_nodes = require("CottonCandy.lib.ts_nodes")
+local lib_select_mode = require("CottonCandy.lib.select_mode")
 
 local M = {}
 
 local select_node = function(node)
-    ts_utils.update_selection(0, node)
-    vim.cmd("norm! ")
+    local start_row, start_col, end_row, end_col = node:range()
+    lib_select_mode.any_select({ start_row, start_col }, { end_row, end_col })
 end
 
 M.select_previous_or_next_node_with_query = function(query, direction)
@@ -37,4 +37,15 @@ M.select_previous_or_next_node_with_query = function(query, direction)
     end
 end
 
+local query = "((identifier) @cap)"
+
+vim.keymap.set({ "n", "s", "i" }, "<C-A-h>", function()
+    M.select_previous_or_next_node_with_query(query, "previous")
+end, {})
+vim.keymap.set({ "n", "s", "i" }, "<C-A-l>", function()
+    M.select_previous_or_next_node_with_query(query, "next")
+end, {})
+
 return M
+
+-- {{{nvim-execute-on-save}}}
