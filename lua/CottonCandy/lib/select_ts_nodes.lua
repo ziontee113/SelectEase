@@ -135,6 +135,7 @@ local vertical_drill_jump = function(opts, nodes, cursor_row, cursor_col)
                     if
                         start_col >= sn_start_col and start_col <= sn_end_col
                         or end_col >= sn_start_col and end_col <= sn_end_col
+                        or start_col <= sn_start_col and end_col >= sn_end_col
                     then
                         if #candidates == 0 then
                             table.insert(candidates, node)
@@ -160,6 +161,7 @@ local vertical_drill_jump = function(opts, nodes, cursor_row, cursor_col)
                     if
                         start_col >= sn_start_col and start_col <= sn_end_col
                         or end_col >= sn_start_col and end_col <= sn_end_col
+                        or start_col <= sn_start_col and end_col >= sn_end_col
                     then
                         if #candidates == 0 then
                             table.insert(candidates, node)
