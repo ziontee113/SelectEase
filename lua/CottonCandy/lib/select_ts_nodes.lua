@@ -10,22 +10,6 @@ local select_node = function(node)
     lib_select_mode.any_select({ start_row, start_col }, { end_row, end_col })
 end
 
-local node_covers_cursor = function(node, cursor_row, cursor_col)
-    local start_row, start_col, end_row, end_col = node:range()
-
-    if start_row ~= end_row and start_row <= cursor_row and end_row >= cursor_row then
-        return true
-    end
-
-    if start_row == end_row and start_row == cursor_row then
-        if start_col <= cursor_col and end_col >= cursor_col then
-            return true
-        end
-    end
-
-    return false
-end
-
 local sequential_jump = function(opts, nodes, cursor_row, cursor_col)
     if opts.direction == "next" then
         for _, node in ipairs(nodes) do
@@ -55,7 +39,7 @@ local sequential_jump = function(opts, nodes, cursor_row, cursor_col)
     end
 end
 
-local find_smallest_range_node = function(nodes)
+local find_node_with_smallest_range = function(nodes)
     local smallest_row = math.huge
     local smallest_col = math.huge
     local smallest_node = nil
@@ -78,18 +62,34 @@ local find_smallest_range_node = function(nodes)
     return smallest_node
 end
 
-local find_nodes_that_covers_cursor = function(nodes, cursor_row, cursor_col)
+local node_covers_cursor = function(node, cursor_row, cursor_col)
+    local start_row, start_col, end_row, end_col = node:range()
+
+    if start_row ~= end_row and start_row <= cursor_row and end_row >= cursor_row then
+        return true
+    end
+
+    if start_row == end_row and start_row == cursor_row then
+        if start_col <= cursor_col and end_col >= cursor_col then
+            return true
+        end
+    end
+
+    return false
+end
+
+local find_nodes_that_cover_cursor = function(nodes, cursor_row, cursor_col)
     local cutoff_index = 1
-    local nodes_that_covers_cursor = {}
+    local nodes_that_cover_cursor = {}
 
     for i, node in ipairs(nodes) do
         if node_covers_cursor(node, cursor_row, cursor_col) then
-            table.insert(nodes_that_covers_cursor, node)
+            table.insert(nodes_that_cover_cursor, node)
             cutoff_index = i
         end
     end
 
-    return nodes_that_covers_cursor, cutoff_index
+    return nodes_that_cover_cursor, cutoff_index
 end
 
 local find_left_most_node = function(nodes)
@@ -115,8 +115,8 @@ end
 
 local vertical_drill_jump = function(opts, nodes, cursor_row, cursor_col)
     local nodes_that_cover_cursor, cutoff_index =
-        find_nodes_that_covers_cursor(nodes, cursor_row, cursor_col)
-    local smallest_node = find_smallest_range_node(nodes_that_cover_cursor)
+        find_nodes_that_cover_cursor(nodes, cursor_row, cursor_col)
+    local smallest_node = find_node_with_smallest_range(nodes_that_cover_cursor)
 
     if smallest_node then
         local _, sn_start_col, _, sn_end_col = smallest_node:range()
