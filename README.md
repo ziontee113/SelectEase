@@ -4,6 +4,15 @@ Select text using Treesitter Queries and start typing right away.
 
 https://user-images.githubusercontent.com/102876811/219462863-d004636c-f7b6-4556-8cc6-45845b3aa668.mp4
 
+---------------------------------------------------------------------------------
+
+SelectEase is a tool designed to identify all nodes that match a query and select the relevant target
+from the cursor, all in Select Mode. Its purpose is to efficiently locate nodes near the cursor
+and enable the user to easily edit that node by typing over it.
+
+Vim's Select Mode allows you to type over a visual selection instead of using commands
+to delete or clear it, making text editing more efficient in certain cases.
+
 ## Word of Caution:
 
 Please be aware that this plugin is still in an experimental stage and may exhibit unexpected behavior.
@@ -18,7 +27,7 @@ Example `lazy.nvim` config:
 return {
     "ziontee113/SelectEase",
     config = function()
-        local candy = require("SelectEase")
+        local select_ease = require("SelectEase")
 
         local lua_query = [[
             ;; query
@@ -39,28 +48,28 @@ return {
         }
 
         vim.keymap.set({ "n", "s", "i" }, "<C-A-k>", function()
-            candy.select_node({
+            select_ease.select_node({
                 queries = queries,
                 direction = "previous",
                 vertical_drill_jump = true,
             })
         end, {})
         vim.keymap.set({ "n", "s", "i" }, "<C-A-j>", function()
-            candy.select_node({
+            select_ease.select_node({
                 queries = queries,
                 direction = "next",
                 vertical_drill_jump = true,
             })
         end, {})
         vim.keymap.set({ "n", "s", "i" }, "<C-A-h>", function()
-            candy.select_node({
+            select_ease.select_node({
                 queries = queries,
                 direction = "previous",
                 current_line_only = true,
             })
         end, {})
         vim.keymap.set({ "n", "s", "i" }, "<C-A-l>", function()
-            candy.select_node({
+            select_ease.select_node({
                 queries = queries,
                 direction = "next",
                 current_line_only = true,
@@ -68,10 +77,10 @@ return {
         end, {})
 
         vim.keymap.set({ "n", "s", "i" }, "<C-A-p>", function()
-            candy.select_node({ queries = queries, direction = "previous" })
+            select_ease.select_node({ queries = queries, direction = "previous" })
         end, {})
         vim.keymap.set({ "n", "s", "i" }, "<C-A-n>", function()
-            candy.select_node({ queries = queries, direction = "next" })
+            select_ease.select_node({ queries = queries, direction = "next" })
         end, {})
     end,
 }
