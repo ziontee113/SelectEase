@@ -153,7 +153,8 @@ local vertical_drill_jump = function(opts, nodes, cursor_row, cursor_col)
 end
 
 M.select_node = function(opts)
-    local nodes = lib_get_ts_nodes.get_nodes_from_query(opts.query)
+    local queries = opts.queries or {}
+    local nodes = lib_get_ts_nodes.get_nodes_from_query(opts.query, queries)
     local cursor = vim.api.nvim_win_get_cursor(0)
     local cursor_row, cursor_col = cursor[1] - 1, cursor[2]
 

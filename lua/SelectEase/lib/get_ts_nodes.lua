@@ -36,9 +36,14 @@ local get_parser_name_and_root = function()
     end
 end
 
-M.get_nodes_from_query = function(query)
+M.get_nodes_from_query = function(query, queries)
     local parser_name, root = get_parser_name_and_root()
     local nodes = {}
+
+    query = queries[parser_name] or query
+    if query == nil then
+        return {}
+    end
 
     local iter_query = vim.treesitter.query.parse_query(parser_name, query)
     for _, matches, _ in iter_query:iter_matches(root) do
