@@ -38,9 +38,12 @@ end
 -- any for any mode.
 -- other functions prefixed with eg. normal have to be in that mode, the
 -- initial esc removes that need.
-function M.any_select(b, e)
+function M.any_select(b, e, opts)
+    local visual_mode = opts.visual_mode and "" or "o<C-G><C-r>_"
+
 	-- stylua: ignore
 	M.replace_feedkeys(
+
 		-- this esc -> movement sometimes leads to a slight flicker
 		-- TODO: look into preventing that reliably.
 		-- simple move -> <esc>v isn't possible, leaving insert moves the
@@ -52,7 +55,7 @@ function M.any_select(b, e)
 			M.cursor_set_keys(e) or
 			-- set before
 			M.cursor_set_keys(e, true))
-		.. "o<C-G><C-r>_" )
+		.. visual_mode )
 end
 
 return M

@@ -5,9 +5,9 @@ local M = {}
 
 -- TODO: evolve to jump to the same node type at cursor
 
-local select_node = function(node)
+local select_node = function(node, opts)
     local start_row, start_col, end_row, end_col = node:range()
-    lib_select_mode.any_select({ start_row, start_col }, { end_row, end_col })
+    lib_select_mode.any_select({ start_row, start_col }, { end_row, end_col }, opts)
 end
 
 local sequential_jump = function(opts, nodes, cursor_row, cursor_col)
@@ -15,11 +15,11 @@ local sequential_jump = function(opts, nodes, cursor_row, cursor_col)
         for _, node in ipairs(nodes) do
             local start_row, start_col, _, _ = node:range()
             if cursor_row == start_row and cursor_col < start_col then
-                select_node(node)
+                select_node(node, opts)
                 break
             end
             if not opts.current_line_only and (cursor_row < start_row) then
-                select_node(node)
+                select_node(node, opts)
                 break
             end
         end
@@ -28,11 +28,11 @@ local sequential_jump = function(opts, nodes, cursor_row, cursor_col)
             local node = nodes[i]
             local start_row, start_col, _, _ = node:range()
             if cursor_row == start_row and cursor_col > start_col then
-                select_node(node)
+                select_node(node, opts)
                 break
             end
             if not opts.current_line_only and (cursor_row > start_row) then
-                select_node(node)
+                select_node(node, opts)
                 break
             end
         end
@@ -147,7 +147,7 @@ local vertical_drill_jump = function(opts, nodes, cursor_row, cursor_col)
 
         if #candidates > 0 then
             local left_most_node = find_left_most_node(candidates)
-            select_node(left_most_node)
+            select_node(left_most_node, opts)
         end
     end
 end

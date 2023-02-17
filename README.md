@@ -52,6 +52,7 @@ return {
                 queries = queries,
                 direction = "previous",
                 vertical_drill_jump = true,
+                -- visual_mode = true, -- if you want Visual Mode instead of Select Mode
             })
         end, {})
         vim.keymap.set({ "n", "s", "i" }, "<C-A-j>", function()
@@ -59,6 +60,7 @@ return {
                 queries = queries,
                 direction = "next",
                 vertical_drill_jump = true,
+                -- visual_mode = true, -- if you want Visual Mode instead of Select Mode
             })
         end, {})
         vim.keymap.set({ "n", "s", "i" }, "<C-A-h>", function()
@@ -66,6 +68,7 @@ return {
                 queries = queries,
                 direction = "previous",
                 current_line_only = true,
+                -- visual_mode = true, -- if you want Visual Mode instead of Select Mode
             })
         end, {})
         vim.keymap.set({ "n", "s", "i" }, "<C-A-l>", function()
@@ -73,9 +76,11 @@ return {
                 queries = queries,
                 direction = "next",
                 current_line_only = true,
+                -- visual_mode = true, -- if you want Visual Mode instead of Select Mode
             })
         end, {})
 
+        -- previous / next node that matches query
         vim.keymap.set({ "n", "s", "i" }, "<C-A-p>", function()
             select_ease.select_node({ queries = queries, direction = "previous" })
         end, {})
