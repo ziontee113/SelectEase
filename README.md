@@ -18,55 +18,60 @@ Example `lazy.nvim` config:
 return {
     "ziontee113/SelectEase",
     config = function()
-        local select_ease = require("SelectEase")
+        local candy = require("SelectEase")
 
-        -- example query
-        local query = [[
+        local lua_query = [[
             ;; query
             ((identifier) @cap)
             ("string_content" @cap)
             ((true) @cap)
             ((false) @cap)
         ]]
+        local python_query = [[
+            ;; query
+            ((identifier) @cap)
+            ((string) @cap)
+        ]]
 
-        -- next / previous node that matches the query
-        vim.keymap.set({ "n", "s", "i" }, "<C-A-p>", function()
-            select_ease.select_node({ query = query, direction = "previous" })
-        end, {})
-        vim.keymap.set({ "n", "s", "i" }, "<C-A-n>", function()
-            select_ease.select_node({ query = query, direction = "next" })
-        end, {})
+        local queries = {
+            lua = lua_query,
+            python = python_query,
+        }
 
-        -- "vertical drill jump"
         vim.keymap.set({ "n", "s", "i" }, "<C-A-k>", function()
-            select_ease.select_node({
-                query = query,
+            candy.select_node({
+                queries = queries,
                 direction = "previous",
                 vertical_drill_jump = true,
             })
         end, {})
         vim.keymap.set({ "n", "s", "i" }, "<C-A-j>", function()
-            select_ease.select_node({
-                query = query,
+            candy.select_node({
+                queries = queries,
                 direction = "next",
                 vertical_drill_jump = true,
             })
         end, {})
-
-        -- jump to targets only on current line
         vim.keymap.set({ "n", "s", "i" }, "<C-A-h>", function()
-            select_ease.select_node({
-                query = query,
+            candy.select_node({
+                queries = queries,
                 direction = "previous",
                 current_line_only = true,
             })
         end, {})
         vim.keymap.set({ "n", "s", "i" }, "<C-A-l>", function()
-            select_ease.select_node({
-                query = query,
+            candy.select_node({
+                queries = queries,
                 direction = "next",
                 current_line_only = true,
             })
+        end, {})
+
+        vim.keymap.set({ "n", "s", "i" }, "<C-A-p>", function()
+            candy.select_node({ queries = queries, direction = "previous" })
+        end, {})
+        vim.keymap.set({ "n", "s", "i" }, "<C-A-n>", function()
+            candy.select_node({ queries = queries, direction = "next" })
         end, {})
     end,
 }
