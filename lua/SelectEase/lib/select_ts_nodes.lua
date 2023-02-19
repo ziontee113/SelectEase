@@ -156,7 +156,7 @@ local get_vertical_drill_jump_target = function(opts, nodes, cursor_row, cursor_
     end
 end
 
-M.select_node = function(opts)
+local get_jump_target = function(opts)
     local queries = opts.queries or {}
     local nodes = lib_get_ts_nodes.get_nodes_from_query(opts.query, queries)
 
@@ -169,6 +169,12 @@ M.select_node = function(opts)
     else
         jump_target = get_sequential_jump_target(opts, nodes, cursor_row, cursor_col)
     end
+
+    return jump_target
+end
+
+M.select_node = function(opts)
+    local jump_target = get_jump_target(opts)
 
     if jump_target then
         select_node(jump_target, opts)
