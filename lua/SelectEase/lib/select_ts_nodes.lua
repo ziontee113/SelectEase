@@ -153,6 +153,8 @@ local get_vertical_drill_jump_target = function(opts, nodes, cursor_row, cursor_
             local left_most_node = find_left_most_node(candidates)
             return left_most_node
         end
+    elseif opts.fallback then
+        opts.fallback()
     end
 end
 
