@@ -39,7 +39,7 @@ end
 -- other functions prefixed with eg. normal have to be in that mode, the
 -- initial esc removes that need.
 function M.any_select(b, e, opts)
-    local visual_mode = opts.visual_mode and "" or "o<C-G><C-r>_"
+    local visual_mode = opts.visual_mode and "o" or "o<C-G><C-r>_"
 
 	-- stylua: ignore
 	M.replace_feedkeys(
