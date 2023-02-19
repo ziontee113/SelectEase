@@ -186,6 +186,10 @@ M.select_node = function(opts)
 end
 
 M.swap_nodes = function(opts)
+    if vim.fn.mode() == "s" then
+        vim.cmd("norm! ")
+    end
+
     local queries = opts.queries or {}
     local nodes = lib_get_ts_nodes.get_nodes_from_query(opts.query, queries)
 
