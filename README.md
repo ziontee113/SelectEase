@@ -53,6 +53,10 @@ return {
                 direction = "previous",
                 vertical_drill_jump = true,
                 -- visual_mode = true, -- if you want Visual Mode instead of Select Mode
+                fallback = function()
+                    -- if there's no target, this function will be called
+                    select_ease.select_node({ queries = queries, direction = "previous" })
+                end,
             })
         end, {})
         vim.keymap.set({ "n", "s", "i" }, "<C-A-j>", function()
@@ -61,8 +65,13 @@ return {
                 direction = "next",
                 vertical_drill_jump = true,
                 -- visual_mode = true, -- if you want Visual Mode instead of Select Mode
+                fallback = function()
+                    -- if there's no target, this function will be called
+                    select_ease.select_node({ queries = queries, direction = "next" })
+                end,
             })
         end, {})
+
         vim.keymap.set({ "n", "s", "i" }, "<C-A-h>", function()
             select_ease.select_node({
                 queries = queries,
