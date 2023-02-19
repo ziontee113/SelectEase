@@ -142,6 +142,19 @@ return {
 ```
 
 ## Queries
+
+<details><summary>TypeScript React</summary>
+
+```lua
+local tsx_query = [[
+    ;; query
+    ((identifier) @cap)
+    ((string_fragment) @cap)
+    ((property_identifier) @cap)
+]]
+```
+</details>
+
 <details><summary>Rust</summary>
 
 ```lua
@@ -228,6 +241,7 @@ local cpp_query = [[
     ((namespace_identifier) @cap)
 ]] .. c_query
 ```
+</details>
 
 ## Feedback is always appreciated 
 
