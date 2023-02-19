@@ -1,3 +1,5 @@
+local ts_utils = require("nvim-treesitter.ts_utils")
+
 local lib_get_ts_nodes = require("SelectEase.lib.get_ts_nodes")
 local lib_select_mode = require("SelectEase.lib.select_mode")
 
@@ -180,6 +182,24 @@ M.select_node = function(opts)
         select_node(jump_target, opts)
     elseif opts.fallback then
         opts.fallback()
+    end
+end
+
+M.swap_nodes = function(opts)
+    local queries = opts.queries or {}
+    local nodes = lib_get_ts_nodes.get_nodes_from_query(opts.query, queries)
+
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local cursor_row, cursor_col = cursor[1] - 1, cursor[2]
+
+    local nodes_that_cover_cursor = find_nodes_that_cover_cursor(nodes, cursor_row, cursor_col)
+    local smallest_node = find_node_with_smallest_range(nodes_that_cover_cursor)
+
+    if smallest_node then
+        local first_node = smallest_node
+        local target_node = get_jump_target(opts)
+
+        ts_utils.swap_nodes(first_node, target_node, 0, false)
     end
 end
 
