@@ -10,7 +10,7 @@ local select_node = function(node, opts)
     lib_select_mode.any_select({ start_row, start_col }, { end_row, end_col }, opts)
 end
 
-local sequential_jump = function(opts, nodes, cursor_row, cursor_col)
+local get_sequential_jump_target = function(opts, nodes, cursor_row, cursor_col)
     local jump_target
 
     if opts.direction == "next" then
@@ -40,11 +40,7 @@ local sequential_jump = function(opts, nodes, cursor_row, cursor_col)
         end
     end
 
-    if jump_target then
-        select_node(jump_target, opts)
-    elseif opts.fallback then
-        opts.fallback()
-    end
+    return jump_target
 end
 
 local find_node_with_smallest_range = function(nodes)
@@ -121,7 +117,7 @@ local function node_is_possible_candidate(start_col, end_col, sn_start_col, sn_e
         or start_col <= sn_start_col and end_col >= sn_end_col
 end
 
-local vertical_drill_jump = function(opts, nodes, cursor_row, cursor_col)
+local get_vertical_drill_jump_target = function(opts, nodes, cursor_row, cursor_col)
     local nodes_that_cover_cursor, cutoff_index =
         find_nodes_that_cover_cursor(nodes, cursor_row, cursor_col)
     local smallest_node = find_node_with_smallest_range(nodes_that_cover_cursor)
@@ -155,9 +151,7 @@ local vertical_drill_jump = function(opts, nodes, cursor_row, cursor_col)
 
         if #candidates > 0 then
             local left_most_node = find_left_most_node(candidates)
-            select_node(left_most_node, opts)
-        elseif opts.fallback then
-            opts.fallback()
+            return left_most_node
         end
     end
 end
@@ -169,10 +163,17 @@ M.select_node = function(opts)
     local cursor = vim.api.nvim_win_get_cursor(0)
     local cursor_row, cursor_col = cursor[1] - 1, cursor[2]
 
+    local jump_target
     if opts.vertical_drill_jump then
-        vertical_drill_jump(opts, nodes, cursor_row, cursor_col)
+        jump_target = get_vertical_drill_jump_target(opts, nodes, cursor_row, cursor_col)
     else
-        sequential_jump(opts, nodes, cursor_row, cursor_col)
+        jump_target = get_sequential_jump_target(opts, nodes, cursor_row, cursor_col)
+    end
+
+    if jump_target then
+        select_node(jump_target, opts)
+    elseif opts.fallback then
+        opts.fallback()
     end
 end
 
