@@ -199,7 +199,7 @@ M.swap_nodes = function(opts)
         local first_node = smallest_node
         local target_node = get_jump_target(opts)
 
-        ts_utils.swap_nodes(first_node, target_node, 0, false)
+        ts_utils.swap_nodes(first_node, target_node, 0, opts.jump_to_target_after_swap or true)
     end
 end
 
