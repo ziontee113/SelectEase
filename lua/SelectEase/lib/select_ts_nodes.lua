@@ -11,15 +11,17 @@ local select_node = function(node, opts)
 end
 
 local sequential_jump = function(opts, nodes, cursor_row, cursor_col)
+    local jump_target
+
     if opts.direction == "next" then
         for _, node in ipairs(nodes) do
             local start_row, start_col, _, _ = node:range()
             if cursor_row == start_row and cursor_col < start_col then
-                select_node(node, opts)
+                jump_target = node
                 break
             end
             if not opts.current_line_only and (cursor_row < start_row) then
-                select_node(node, opts)
+                jump_target = node
                 break
             end
         end
@@ -28,14 +30,20 @@ local sequential_jump = function(opts, nodes, cursor_row, cursor_col)
             local node = nodes[i]
             local start_row, start_col, _, _ = node:range()
             if cursor_row == start_row and cursor_col > start_col then
-                select_node(node, opts)
+                jump_target = node
                 break
             end
             if not opts.current_line_only and (cursor_row > start_row) then
-                select_node(node, opts)
+                jump_target = node
                 break
             end
         end
+    end
+
+    if jump_target then
+        select_node(jump_target, opts)
+    elseif opts.fallback then
+        opts.fallback()
     end
 end
 
@@ -148,6 +156,8 @@ local vertical_drill_jump = function(opts, nodes, cursor_row, cursor_col)
         if #candidates > 0 then
             local left_most_node = find_left_most_node(candidates)
             select_node(left_most_node, opts)
+        elseif opts.fallback then
+            opts.fallback()
         end
     end
 end
