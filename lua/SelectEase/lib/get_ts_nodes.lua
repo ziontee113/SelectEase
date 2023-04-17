@@ -45,7 +45,7 @@ M.get_nodes_from_query = function(query, queries)
         return {}
     end
 
-    local iter_query = vim.treesitter.query.parse_query(parser_name, query)
+    local iter_query = vim.treesitter.query.parse(parser_name, query)
     for _, matches, _ in iter_query:iter_matches(root) do
         local node = matches[1]
         table.insert(nodes, node)
