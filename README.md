@@ -33,7 +33,7 @@ return {
         local lua_query = [[
             ;; query
             ((identifier) @cap)
-            ("string_content" @cap)
+            ((string_content) @cap)
             ((true) @cap)
             ((false) @cap)
         ]]
